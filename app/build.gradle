@@ -1,3 +1,12 @@
+import dependecies.AnnotationProcessing
+import dependecies.SupportDependencies
+import dependecies.TestDependencies
+import dependecies.Versions
+import dependecies.Application
+import dependecies.Dependencies
+import dependecies.AndroidTestDependencies
+import dependecies.Java
+
 
 apply plugin: 'com.android.application'
 
@@ -9,15 +18,15 @@ apply plugin: 'kotlin-kapt'
 
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion Versions.compilesdk
     defaultConfig {
-        applicationId "com.codingwithmitch.cleannotes"
-        minSdkVersion 21
-        targetSdkVersion 29
-        versionCode 1
-        versionName "1.0"
+        applicationId Application.id
+        minSdkVersion Versions.minsdk
+        targetSdkVersion Versions.targetsdk
+        versionCode Application.version_code
+        versionName Application.version_name
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner AndroidTestDependencies.instrumentation_runner
     }
     buildTypes {
         debug {
@@ -29,12 +38,23 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = "1.8"
-        targetCompatibility = "1.8"
+        sourceCompatibility = Java.java_version
+        targetCompatibility = Java.java_version
     }
 
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = Java.java_version
+    }
+
+    sourceSets{
+        test.resources.srcDirs += "src/test/res"
+    }
+
+    // remove need for apply plugin: 'de.mannodermaus.android-junit5'
+    testOptions {
+        unitTests.all {
+            useJUnitPlatform()
+        }
     }
 }
 
@@ -43,14 +63,41 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     // Kotlin
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.61"
-    implementation "org.jetbrains.kotlin:kotlin-reflect:1.3.61"
-    implementation "androidx.core:core-ktx:1.2.0"
+    implementation Dependencies.kotlin_standard_library
+    implementation Dependencies.kotlin_reflect
+    implementation Dependencies.ktx
+    implementation Dependencies.kotlin_coroutines_play_services
+    implementation Dependencies.kotlin_coroutines
+    implementation Dependencies.kotlin_coroutines_android
+
+    // Dagger
+    implementation Dependencies.dagger
+    // Firebase
+    implementation Dependencies.firebase_firestore
+    implementation Dependencies.firebase_auth
+    implementation Dependencies.firebase_analytics
+    implementation Dependencies.firebase_crashlytics
+    implementation Dependencies.kotlin_coroutines
+    implementation Dependencies.kotlin_coroutines_android
+    implementation Dependencies.kotlin_coroutines_play_services
+    implementation Dependencies.retrofit
+    implementation Dependencies.retrofit_gson
+
+    // Annotation processing
+    kapt AnnotationProcessing.dagger_compiler
 
     // Support
-    implementation "androidx.appcompat:appcompat:1.1.0-rc01"
-    implementation "androidx.constraintlayout:constraintlayout:1.1.3"
-    implementation "com.google.android.material:material:1.1.0"
-    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0-alpha03"
+    implementation SupportDependencies.appcompat
+    implementation SupportDependencies.constraintlayout
+    implementation SupportDependencies.material_design
+    implementation SupportDependencies.swipe_refresh_layout
+
+    // Unit test
+    testImplementation TestDependencies.mockk
+    testImplementation TestDependencies.jupiter_api
+    testImplementation TestDependencies.jupiter_params
+    testImplementation TestDependencies.junit4
+    testRuntimeOnly TestDependencies.jupiter_engine
+    testImplementation Dependencies.retrofit_gson
 
 }
